@@ -9,5 +9,5 @@ async function loadComponent(containerId, filePath) {
 }
 
 // 載入 Navbar 和 Footer
-loadComponent('navbar-container', '/navbar.html');
-loadComponent('footer-container', '/footer.html');
+loadComponent('navbar-container', 'navbar.html');
+loadComponent('footer-container', 'footer.html');
