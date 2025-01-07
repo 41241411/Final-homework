@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儲值</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/main.js" defer></script>
+    <script src="/js/language.js" defer></script>
+    <script src="/js/recharge.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import {
+            getDatabase,
+            get,
+            update,
+            ref,
+            set,
+            push,
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA70-rQBBmkKm3qGVx8auaNfv9l-usK91w",
+            authDomain: "final-report-3e5a7.firebaseapp.com",
+            databaseURL: "https://final-report-3e5a7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "final-report-3e5a7",
+            storageBucket: "final-report-3e5a7.firebasestorage.app",
+            messagingSenderId: "1071636134607",
+            appId: "1:1071636134607:web:21ce648a99268cb62715ba",
+            measurementId: "G-9H9TQ0X61W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase();
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const cardNumberinput = document.getElementById("cardNumberinput");
+
+            cardNumberinput.addEventListener("input", () => {
+                const cardNumber = cardNumberinput.value.trim();
+
+                if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
+                    console.log("Card number:", cardNumber);
+                    cardNumberinput.value = ""; // 清空輸入框
+                    handleSubmission(cardNumber);
+                }
+            });
+        });
+
+        async function handleSubmission(cardNumber) {
+            // 檢查是否輸入儲值金額
+            const topUpAmount = parseInt(document.getElementById("topUpAmount").value.trim());
+
+            if (!topUpAmount || topUpAmount <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: tip.rechargeFailure,
+                    text: tip.topUpAmountError,
+                });
+                return;
+            }
+
+            // Firebase Realtime Database 路徑
+            const cardRef = ref(database, `rfidCards/${cardNumber}`);
+
+            try {
+                // 嘗試獲取卡號資料
+                const snapshot = await get(cardRef);
+
+                if (!snapshot.exists()) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: tip.rechargeFailure,
+                        text: tip.cardNumberNotFound,
+                    });
+                    return;
+                }
+
+                const cardData = snapshot.val();
+
+                // 檢查卡號的狀態是否為進場或已勾選
+                if (cardData.status !== "進場" && cardData.status !== "Enter") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: tip.rechargeFailure,
+                        text: tip.cardStatusError,
+                    });
+                    return;
+                }
+
+                // 獲取卡片餘額並進行儲值
+                const currentBalance = cardData.balance || 0;
+                const newBalance = currentBalance + topUpAmount;
+
+                // 更新資料庫中的 balance
+                await update(cardRef, { balance: newBalance });
+
+                // 生成唯一的儲值紀錄ID
+                const recordRef = ref(database, `rfidCards/${cardNumber}/Record`);
+                const newRecordRef = push(recordRef); // push 會自動生成唯一的ID
+
+                // 儲存儲值紀錄
+                await set(newRecordRef, {
+                    type: "recharge",  // 設置紀錄類型為儲值
+                    amount: topUpAmount,  // 儲值金額
+                    newBalance: newBalance,  // 儲值後餘額
+                    date: new Date().toISOString(), // 儲值日期，ISO 8601 格式
+                });
+
+                // 顯示儲值成功的訊息
+                Swal.fire({
+                    icon: 'success',
+                    title: tip.rechargeSuccess,
+                    text: tip.rechargeSuccessMessage(cardNumber, topUpAmount, newBalance),
+                });
+
+                // 清空儲值金額輸入框
+                document.getElementById("topUpAmount").value = ''; // 清空儲值金額輸入框
+
+            } catch (error) {
+                console.error("儲值過程中發生錯誤:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: tip.rechargeFailure,
+                    text: tip.rechargeFailureMessage,
+                });
+            }
+        }
+
+    </script>
+    <style>
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #footer-container {
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <div id="navbar-container"></div>
+
+        <div class="container my-5 form-container">
+            <h2 data-lang="recharge-header">儲值</h2>
+            <form id="top-up-form">
+                <div class="mb-3">
+                    <label for="topUpAmount" class="form-label" data-lang="top-up-amount-label">儲值金額</label>
+                    <input type="number" class="form-control" id="topUpAmount" placeholder="請輸入儲值金額" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cardNumberinput" class="form-label" data-lang="card-number-label">卡號</label>
+                    <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號" required>
+                </div>
+            </form>
+        </div>
+
+        <div id="footer-container"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

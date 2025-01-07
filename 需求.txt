@@ -1,0 +1,66 @@
+假設有一個客戶在詢問位於雲林，正在籌備度假村及遊樂園，計畫採購RFID感應門票，應用於門票及園內消費。期末作業完成需求如下：
+功能性實現 (70 分)
+*1.門禁驗票功能 (15 分): 能正確模擬 RFID 感應進出場流程，資料即時更新。
+*2.消費支付功能 (15 分): 電子錢包功能可完成扣款，餘額即時更新並記錄於後端。
+*3.儲值功能 (10 分): 支援儲值操作，包含金額驗證與數據同步。
+*4.查詢餘額功能 (10 分): 提供使用者查詢餘額的功能，顯示清晰正確。
+*5.多語系介面 (10 分): 系統具備完整中英文切換，翻譯正確，切換流暢。
+*6.當日交易紀錄網頁呈現 (10 分): 網頁提供當日即時的消費與儲值交易紀錄清單，方便客戶經營查閱。
+
+介面設計與用戶體驗 (30 分)
+7.前端設計與美觀 (10 分): 使用 Bootstrap 或其他框架，設計美觀且響應式。
+8.語音播報 (10 分): 增加消費語音播報，消費狀態回應。
+9.園區風格呈現 (5 分): 網頁能體現度假村與遊樂園主題，設計具吸引力。
+10.餘額與視覺化呈現 (5 分): 使用如進度條或圖表呈現餘額，讓用戶更直觀了解資金使用情況。
+
+前端與互動功能 (20 分)
+11.即時數據更新功能 (10 分): 使用 AJAX 實現儲值、扣款後網頁數據即時更新，無需重新整理頁面。
+12.前端數據驗證 (10 分): 提供前端檢查功能（如輸入金額驗證、RFID 代碼格式檢查），提高操作準確性。
+
+※講解影片以及講解PPT和網頁原始碼，未上傳者不予計分。
+
+
+如果 tip.statusText = '入場' 且 currentStatus = "進場"，則 newStatus 會是 "退場"。
+如果 tip.statusText = 'Checked in' 且 currentStatus = "Checked in"，則 newStatus 會是 "Checked out"。
+如果 tip.statusText = '入場' 且 currentStatus = "退場"，則 newStatus 會是 "進場"。
+如果 tip.statusText = 'Checked in' 且 currentStatus = "Checked out"，則 newStatus 會是 "Checked in"。
+如果 tip.statusText = '入場' 且 currentStatus = "Checked in"，則 newStatus 會是 "退場"。
+如果 tip.statusText = 'Checked in' 且 currentStatus = "進場"，則 newStatus 會是 "Checked out"。
+如果 tip.statusText = '入場' 且 currentStatus = "Checked in"，則 newStatus 會是 "進場"。
+如果 tip.statusText = 'Checked in' 且 currentStatus = "退場"，則 newStatus 會是 "Checked in"。
+
+111111111111
+222222222222
+333333333333
+
+41241410
+
+
+
+
+
+
+
+
+const languages = {
+    en: {
+        "error": "Error",
+        "card-not-exist": "Card number does not exist, please check and try again!",
+        "invalid-status": "Card number not in 'Checked in' or 'Entered' status, please check and try again!",
+        "insufficient-balance": "Insufficient balance, please check your balance and try again!",
+        "success": "Transaction successful!",
+        "success-text": "Remaining balance: <span id='remainingBalance'></span>.",
+        "failure": "Transaction failed",
+        "failure-text": "Please try again later.",
+    },
+    zh: {
+        "error": "錯誤",
+        "card-not-exist": "卡號不存在，請檢查後重試！",
+        "invalid-status": "卡號未處於'進場'或'Checked in'狀態，請檢查後重試！",
+        "insufficient-balance": "餘額不足，請檢查後重試！",
+        "success": "交易成功！",
+        "success-text": "剩餘餘額：<span id='remainingBalance'></span>。",
+        "failure": "交易失敗",
+        "failure-text": "請稍後再試。",
+    },
+};

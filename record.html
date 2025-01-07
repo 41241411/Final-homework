@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>當日交易紀錄</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/main.js" defer></script>
+    <script src="/js/language.js" defer></script>
+    <script src="/js/record.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import {
+            getDatabase,
+            get,
+            update,
+            ref,
+            set,
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA70-rQBBmkKm3qGVx8auaNfv9l-usK91w",
+            authDomain: "final-report-3e5a7.firebaseapp.com",
+            databaseURL: "https://final-report-3e5a7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "final-report-3e5a7",
+            storageBucket: "final-report-3e5a7.firebasestorage.app",
+            messagingSenderId: "1071636134607",
+            appId: "1:1071636134607:web:21ce648a99268cb62715ba",
+            measurementId: "G-9H9TQ0X61W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase();
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const cardNumberinput = document.getElementById("cardNumberinput");
+
+            cardNumberinput.addEventListener("input", () => {
+                const cardNumber = cardNumberinput.value.trim();
+
+                if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
+                    console.log("Card number:", cardNumber);
+                    cardNumberinput.value = ""; // 清空輸入框
+                    handleSubmission(cardNumber);
+                }
+            });
+        });
+
+        async function handleSubmission(cardNumber) {
+            // Firebase Realtime Database 路徑
+            const databaseRef = ref(database, `rfidCards/${cardNumber}`);
+
+            try {
+                // 檢查卡號是否存在
+                const snapshot = await get(databaseRef);
+                if (!snapshot.exists()) {
+                    // 如果卡號不存在，顯示錯誤提示
+                    await Swal.fire({
+                        icon: 'error',
+                        title: tip.cardNumberNotFound,
+                    });
+                    recordTableBody.innerHTML = ''; // 清空之前的表格內容
+                    return;
+                }
+
+                // 卡號存在，獲取交易紀錄
+                const cardData = snapshot.val();
+                const records = cardData.Record;
+
+                if (!records) {
+                    // 如果沒有交易紀錄，顯示提示訊息
+                    await Swal.fire({
+                        icon: 'info',
+                        title: tip.cardNumberNotrecord,
+                    });
+                    recordTableBody.innerHTML = ''; // 清空之前的表格內容
+                    return;
+                }
+
+                // 顯示交易紀錄和儲值紀錄
+                const recordTableBody = document.getElementById("recordTableBody");
+                recordTableBody.innerHTML = ''; // 清空之前的表格內容
+
+                for (const recordId in records) {
+                    const record = records[recordId];
+                    const row = document.createElement("tr");
+
+                    // 判斷是交易紀錄還是儲值紀錄
+                    if (record.type === 'purchase') {
+                        // 顯示交易紀錄
+                        let productDetails = '';
+                        record.products.forEach(product => {
+                            productDetails += `${product.productName} (x${product.quantity}) - ${product.amount}元<br>`;
+                        });
+
+                        // 建立表格行：顯示商品名稱、總金額和交易日期
+                        row.innerHTML = `
+                    <td>${tip.TransactionRecords}</td>
+                    <td>${productDetails}</td>
+                    <td>${new Date(record.date).toLocaleString()}</td>
+                `;
+                    } else if (record.type === 'recharge') {
+                        // 顯示儲值紀錄
+                        row.innerHTML = `
+                    <td>${tip.RechargeRecords}</td>
+                    <td>${tip.Rechargeamount}${record.amount}</td>
+                    <td>${new Date(record.date).toLocaleString()}</td>
+                `;
+                    }
+
+                    // 將行添加到表格中
+                    recordTableBody.appendChild(row);
+                }
+
+            } catch (error) {
+                console.error("讀取交易紀錄失敗：", error);
+                recordTableBody.innerHTML = ''; // 清空之前的表格內容
+            }
+        }
+
+        // 註冊搜尋事件
+        document.getElementById("search").addEventListener("input", function () {
+            const searchQuery = this.value.trim().toLowerCase(); // 取得搜尋欄位的值並轉小寫
+
+            // 確認表格中是否有資料，如果有資料才進行篩選
+            const recordTableBody = document.getElementById("recordTableBody");
+            if (recordTableBody.rows.length === 0) {
+                return; // 如果表格沒有資料，什麼都不做
+            }
+
+            // 取得所有的表格行
+            const rows = recordTableBody.getElementsByTagName("tr");
+
+            // 遍歷每一行
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName("td");
+                let isMatch = false;
+
+                // 檢查每一個欄位（類型、資訊、日期）是否符合搜尋詞
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(searchQuery)) {
+                        isMatch = true;
+                        break; // 如果有任何欄位符合搜尋條件，則標記為匹配
+                    }
+                }
+
+                // 根據是否匹配搜尋詞來顯示或隱藏該行
+                if (isMatch) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+    </script>
+    <style>
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #footer-container {
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <div id="navbar-container"></div>
+
+        <div class="container my-5">
+            <h1 data-lang="daily-transactions">當日交易紀錄</h1>
+            <div class="mb-3">
+                <label for="cardNumberinput" class="form-label" data-lang="card-number">卡號</label>
+                <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號">
+            </div>
+
+            <!-- 單一搜尋欄位 -->
+            <div class="mb-3">
+                <label for="search" class="form-label" data-lang="search">搜尋交易紀錄</label>
+                <input type="text" class="form-control" id="search" placeholder="搜尋類型、資訊或日期">
+            </div>
+
+            <div class="record-list mb-3" id="recordList">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th data-lang="type">類型</th>
+                            <th data-lang="info">資訊</th>
+                            <th data-lang="date">日期</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTableBody">
+                        <!-- 這裡是商品資料動態顯示的位置 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="footer-container"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

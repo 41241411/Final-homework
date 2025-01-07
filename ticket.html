@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>門禁驗票</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/main.js" defer></script>
+    <script src="/js/language.js" defer></script>
+    <script src="/js/ticket.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+        import {
+            getDatabase,
+            get,
+            update,
+            ref,
+            set,
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA70-rQBBmkKm3qGVx8auaNfv9l-usK91w",
+            authDomain: "final-report-3e5a7.firebaseapp.com",
+            databaseURL: "https://final-report-3e5a7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "final-report-3e5a7",
+            storageBucket: "final-report-3e5a7.firebasestorage.app",
+            messagingSenderId: "1071636134607",
+            appId: "1:1071636134607:web:21ce648a99268cb62715ba",
+            measurementId: "G-9H9TQ0X61W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase();
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const rfidInput = document.getElementById("rfidInput");
+
+            rfidInput.addEventListener("input", () => {
+                const cardNumber = rfidInput.value.trim();
+
+                if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
+                    handleSubmission(cardNumber);
+                }
+            });
+        });
+
+        // 按鈕點擊事件
+        function handleSubmission(cardNumber) {
+            if (!cardNumber) {
+                Swal.fire({
+                    icon: "warning",
+                    title: tip.invalidInput,
+                });
+                return;
+            }
+
+            get(ref(database, `rfidCards/${cardNumber}`))
+                .then((snapshot) => {
+                    console.log(lang);
+
+                    if (snapshot.exists()) {
+                        // 資料已存在，取得資料庫中的 status 和 balance
+                        const currentStatus = snapshot.val().status;
+                        const currentBalance = snapshot.val().balance || 100;  // 若資料庫沒有 balance，使用預設值 100
+                        console.log("Updated 22:", currentStatus);  // 輸出更新後的狀態
+
+                        // 根據當前的 status 設定 newStatus
+                        const newStatus = (() => {
+                            if (tip.statusText === '入場') {
+                                // 根據 currentStatus 設定 newStatus
+                                if (currentStatus === "進場") {
+                                    return "退場";
+                                } else if (currentStatus === "退場") {
+                                    return "進場";
+                                } else if (currentStatus === "Enter") {
+                                    return "退場";
+                                } else if (currentStatus === "Exit") {
+                                    return "進場";
+                                }
+                            } else if (tip.statusText === 'Enter') {
+                                // 根據 currentStatus 設定 newStatus
+                                if (currentStatus === "進場") {
+                                    return "Exit";
+                                } else if (currentStatus === "退場") {
+                                    return "Enter";
+                                } else if (currentStatus === "Enter") {
+                                    return "Exit";
+                                } else if (currentStatus === "Exit") {
+                                    return "Enter";
+                                }
+                            }
+                        })();
+
+
+                        console.log("Updated 33:", newStatus);  // 輸出更新後的狀態
+
+                        // 更新資料庫中的狀態
+                        update(ref(database, `rfidCards/${cardNumber}`), {
+                            status: newStatus,  // 更新狀態
+                            balance: currentBalance // 保持原來的餘額
+                        })
+                            .then(() => {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: tip.successTitle(cardNumber, newStatus),
+                                });
+                                rfidInput.value = ""; // 清空輸入框
+                            })
+                            .catch((error) => {
+                                console.error("更新失敗：", error);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: tip.errorTitle,
+                                });
+                            });
+                    } else {
+                        // 資料不存在，第一次輸入，設為進場或 Enter，並且預設餘額為 100
+                        const initialStatus = (lang === 'zh' ? "進場" : "Enter");
+                        set(ref(database, `rfidCards/${cardNumber}`), {
+                            status: initialStatus,  // 根據語言設置預設狀態
+                            balance: 100 // 預設餘額
+                        })
+                            .then(() => {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: tip.successTitle(cardNumber, initialStatus),
+                                });
+                                rfidInput.value = ""; // 清空輸入框
+                            })
+                            .catch((error) => {
+                                console.error("存入失敗：", error);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: tip.errorTitle,
+                                });
+                            });
+                    }
+                })
+                .catch((error) => {
+                    console.error("查詢失敗：", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: tip.errorTitle,
+                    });
+                });
+        };
+
+
+    </script>
+
+    <style>
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #footer-container {
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <div id="navbar-container"></div>
+
+        <div class="container my-5">
+            <h2 data-lang="ticket">門禁驗票</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="rfidInput" class="form-label" data-lang="card-number">卡號</label>
+                    <input type="text" id="rfidInput" placeholder="請輸入8位數卡號" class="form-control" required>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
