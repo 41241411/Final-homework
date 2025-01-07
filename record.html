@@ -10,6 +10,7 @@
     <script src="js/language.js" defer></script>
     <script src="js/record.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -72,7 +73,7 @@
                 // 卡號存在，獲取交易紀錄
                 const cardData = snapshot.val();
                 const records = cardData.Record;
-
+                console.log(records);
                 if (!records) {
                     // 如果沒有交易紀錄，顯示提示訊息
                     await Swal.fire({
@@ -95,9 +96,15 @@
                     if (record.type === 'purchase') {
                         // 顯示交易紀錄
                         let productDetails = '';
-                        record.products.forEach(product => {
-                            productDetails += `${product.productName} (x${product.quantity}) - ${product.amount}元<br>`;
-                        });
+                        if (Array.isArray(record.products)) {
+                            record.products.forEach(product => {
+                                productDetails += `${product.productName} (x${product.quantity}) - ${product.amount}元<br>`;
+                            });
+                        } else {
+                            console.warn("交易紀錄中 products 欄位不存在或不是陣列：", record.products);
+                            productDetails = tip.noProductDetails; // 或設定一個預設訊息
+                        }
+
 
                         // 建立表格行：顯示商品名稱、總金額和交易日期
                         row.innerHTML = `
@@ -159,6 +166,7 @@
             });
         });
 
+
     </script>
     <style>
         .page-container {
@@ -197,7 +205,7 @@
                         <tr>
                             <th data-lang="type">類型</th>
                             <th data-lang="info">資訊</th>
-                            <th data-lang="date">日期</th>
+                            <th data-lang="date">日期<i class="bi bi-sort"></i></th>
                         </tr>
                     </thead>
                     <tbody id="recordTableBody">
@@ -213,7 +221,70 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateHeader = document.querySelector('th[data-lang="date"]');
+            const dateIcon = dateHeader ? dateHeader.querySelector('i') : null;
 
+            if (dateIcon) {
+                dateHeader.addEventListener('click', function () {
+                    console.log('Date header clicked!');
+                    const table = dateHeader.closest('table');
+                    const rows = Array.from(table.querySelectorAll('tbody tr')); // 只選擇 tbody 中的行
+
+                    // 檢查排序狀態
+                    const isAscending = dateIcon.classList.contains('bi-sort-up');
+
+                    // 排序日期（假設日期格式為 2025/1/7 上午2:19:33）
+                    rows.sort((rowA, rowB) => {
+                        const dateA = parseDate(rowA.cells[2].innerText); // 日期在第三列
+                        const dateB = parseDate(rowB.cells[2].innerText);
+                        return isAscending
+                            ? dateA - dateB
+                            : dateB - dateA;
+                    });
+
+                    // 重排行
+                    rows.forEach(row => table.querySelector('tbody').appendChild(row));
+
+                });
+            } else {
+                console.error('Date icon not found!');
+            }
+        });
+
+        // 解析日期字符串，將它轉換為有效的 Date 對象
+        function parseDate(dateStr) {
+            // 如果是上午/下午格式的日期（例如 2025/1/7 上午2:19:33）
+            const amPmRegex = /(\d{4})\/(\d{1,2})\/(\d{1,2}) (上午|下午)(\d{1,2}):(\d{1,2}):(\d{1,2})/;
+            const match = dateStr.match(amPmRegex);
+
+            if (match) {
+                let [_, year, month, day, ampm, hour, minute, second] = match;
+                month = parseInt(month, 10) - 1; // JavaScript 月份是從 0 開始的
+                day = parseInt(day, 10);
+                hour = parseInt(hour, 10);
+                minute = parseInt(minute, 10);
+                second = parseInt(second, 10);
+
+                // 如果是下午，將時間加12
+                if (ampm === '下午' && hour < 12) {
+                    hour += 12;
+                }
+                // 如果是上午且小於12小時的時間保持不變
+                if (ampm === '上午' && hour === 12) {
+                    hour = 0; // 12:xx AM 要轉為 0:xx
+                }
+
+                // 返回一個新的 Date 對象
+                return new Date(year, month, day, hour, minute, second);
+            }
+
+            // 如果無法匹配上午/下午格式，則使用原本的 Date 解析
+            return new Date(dateStr);
+        }
+
+    </script>
 </body>
 
 </html>

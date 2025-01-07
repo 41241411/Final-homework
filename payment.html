@@ -84,8 +84,7 @@
             } else {
                 Swal.fire({
                     icon: "error",
-                    title: "商品不存在",
-                    text: `商品編號 ${productCode} 不存在於系統中。`,
+                    title: tip.noproduct,
                 });
             }
         }
@@ -106,8 +105,7 @@
                     <td>${item.name}</td>
                     <td>${item.quantity}</td>
                     <td>${item.price}</td>
-                    <td>${item.quantity * item.price}</td>
-                    <td><button class="btn btn-danger btn-sm delete-btn" data-code="${code}" data-lang="delete">刪除</button></td>
+                    <td><button class="btn btn-danger btn-sm delete-btn" data-code="${code}" data-lang="delete">${tip.del}</button></td>
                 `;
                 productTableBody.appendChild(row);
             }
@@ -166,7 +164,7 @@
         }
 
 
-        // 交易按鈕點擊事件
+        // 卡片查詢事件
         window.addEventListener("DOMContentLoaded", () => {
             const cardNumberinput = document.getElementById("cardNumberinput");
 
@@ -176,27 +174,67 @@
                 if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
                     console.log("Card number:", cardNumber);
                     cardNumberinput.value = ""; // 清空輸入框
-                    handleSubmission(cardNumber);
+                    cardstatus(cardNumber);
                 }
             });
         });
 
+        async function cardstatus(cardNumber) {
+            const cardRef = ref(database, `rfidCards/${cardNumber}`);
+            const snapshot = await get(cardRef);
+
+            // 檢查卡號是否存在且 status 為 "進場" 或 "Checked in"
+            if (!snapshot.exists() || !(snapshot.val().status === "進場" || snapshot.val().status === "Enter")) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: tip.error,
+                    text: tip.invalidstatus,
+                });
+                return;
+            } else {
+                const cardData = snapshot.val();
+                const balanceInput = document.getElementById("balance");
+                const currentBalance = cardData.balance || 0;
+                balanceInput.value = currentBalance;
+
+                const cardNumberInput = document.getElementById("cardNumber");
+                cardNumberInput.value = cardNumber;
+
+                const cardInfo = document.getElementById("cardInfo");
+                cardInfo.style.display = "block";
+            }
+        }
+
+        // 交易事件
+        window.addEventListener("DOMContentLoaded", () => {
+            const cardNumber = document.getElementById("cardNumber");
+
+            const transactionButton = document.getElementById("transactionButton");
+
+            // 設置按鈕的點擊事件處理函式
+            transactionButton.addEventListener("click", () => {
+                // 取得卡號並執行處理交易的函式
+                handleSubmission(cardNumber.value);
+            });
+
+        });
+
         async function handleSubmission(cardNumber) {
+            if (totalAmount === 0) {
+                // 如果為 0，顯示提示並結束函式
+                await Swal.fire({
+                    icon: 'warning',
+                    title: tip.selectProduct,  // 假設這是你希望顯示的提示文字
+                });
+                return;  // 停止執行後續交易邏輯
+            }
+
             // Firebase Realtime Database 路徑
             const databaseRef = ref(database, `rfidCards/${cardNumber}`);
 
             try {
-                // 檢查卡號是否存在且 status 為 "進場" 或 "Checked in"
+                // 檢查卡號是否存在
                 const snapshot = await get(databaseRef);
-                if (!snapshot.exists() || !(snapshot.val().status === "進場" || snapshot.val().status === "Enter")) {
-                    await Swal.fire({
-                        icon: 'error',
-                        title: tip.error,
-                        text: tip.invalidstatus,
-                    });
-                    return;
-                }
-
                 // 卡號存在，獲取餘額
                 const cardData = snapshot.val();
                 const currentBalance = cardData.balance || 0;
@@ -253,6 +291,7 @@
 
                 // 清空購物車
                 clearCart();
+                cardstatus(cardNumber);  // 更新卡片資訊
 
             } catch (error) {
                 console.error("交易失敗：", error);
@@ -277,16 +316,14 @@
         }
 
         .product-information {
-            display: flex;
             flex-direction: row;
-            min-height: 85vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         .left-container,
         .right-container {
             flex: 1;
-            padding: 20px;
+            padding: 10px;
             border: 1px solid #ddd;
             margin: 10px;
         }
@@ -298,45 +335,68 @@
 
         <div id="navbar-container"></div>
 
-        <div class="product-information container">
-            <div class="left-container">
-                <h4 data-lang="product-information-header">商品資訊</h4>
-                <div class="mb-3">
-                    <input type="text" id="productCode" class="form-control" placeholder="請輸入12位數商品編號" required>
+        <div class="product-information container my-4">
+            <div class="row">
+                <!-- 左側區塊 -->
+                <div class="col-12 col-md-6">
+                    <div class="left-container rounded">
+                        <h4 data-lang="product-information-header">商品資訊</h4>
+                        <div class="mb-3">
+                            <input type="text" id="productCode" class="form-control" placeholder="請輸入12位數商品編號" required>
+                        </div>
+
+                        <div class="product-list mb-3" id="productList">
+                            <!-- 靜態表頭 -->
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th data-lang="productName">商品名稱</th>
+                                        <th data-lang="quantity">數量</th>
+                                        <th data-lang="unitPrice">單價</th>
+                                        <th data-lang="operation">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productTableBody">
+                                    <!-- 這裡是商品資料動態顯示的位置 -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end">
+                            <h5 data-lang="total-amount">總金額：<span id="totalAmount">0</span> 元</h5>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="product-list mb-3" id="productList">
-                    <!-- 靜態表頭 -->
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th data-lang="productName">商品名稱</th>
-                                <th data-lang="quantity">數量</th>
-                                <th data-lang="unitPrice">單價</th>
-                                <th data-lang="subtotal">小計</th>
-                                <th data-lang="operation">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                            <!-- 這裡是商品資料動態顯示的位置 -->
-                        </tbody>
-                    </table>
-                </div>
-
-
-                <div class="text-end">
-                    <h5 data-lang="total-amount">總金額：<span id="totalAmount">0</span> 元</h4>
-                </div>
-            </div>
-
-            <div class="right-container">
-                <h4 data-lang="transaction-info">交易資訊</h4>
-                <div>
-                    <label for="cardNumberinput" data-lang="card-number">卡號:</label>
-                    <input type="text" id="cardNumberinput" class="form-control mb-3" placeholder="請輸入8位數卡號" required>
+                <!-- 右側區塊 -->
+                <div class="col-12 col-md-6">
+                    <div class="right-container rounded">
+                        <h4 data-lang="transaction-info">交易資訊</h4>
+                        <div>
+                            <label for="cardNumberinput" data-lang="card-number">卡號:</label>
+                            <input type="text" id="cardNumberinput" class="form-control mb-3" placeholder="請輸入8位數卡號"
+                                required>
+                        </div>
+                        <!-- 新增卡號與餘額的顯示區域 -->
+                        <div id="cardInfo" class="card-info mt-3">
+                            <h5 data-lang="card-info">卡號資訊</h5>
+                            <div class="mb-3">
+                                <label for="cardNumber" data-lang="cardnumber">卡號:</label>
+                                <input type="text" id="cardNumber" class="form-control" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="balance" data-lang="cardbalance">餘額:</label>
+                                <input type="text" id="balance" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-primary" data-lang="action" id="transactionButton">交易</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
 
         <div id="footer-container"></div>
 

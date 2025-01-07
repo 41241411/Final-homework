@@ -1,25 +1,29 @@
 const payment = {
     en: {
         "product-information-header": "Product Information",
-        "productName": "Product Name",
-        "quantity": "Quantity",
-        "unitPrice": "Unit Price",
-        "subtotal": "Subtotal",
+        "productName": `<h6>Product Name</h6>`,
+        "quantity": `<h6>Quantity</h6>`,
+        "unitPrice": `<h6>Unit Price</h6>`,
         "total-amount": 'Total Amount：<span id="totalAmount">0</span> dollar',
         "transaction-info": "Transaction Information",
-        "card-number": "Card Number:",
-        "operation": "Operation",
+        "card-info": "Card Information",
+        "cardnumber": "Card Number:",
+        "cardbalance": "Card Balance:",
+        "operation": `<h6>Operation</h6>`,
+        "action": "Pay",
     },
     zh: {
         "product-information-header": "商品資訊",
         "productName": "商品名稱",
         "quantity": "數量",
         "unitPrice": "單價",
-        "subtotal": "小計",
         "total-amount": '總金額：<span id="totalAmount">0</span> 元',
         "transaction-info": "交易資訊",
-        "card-number": "卡號:",
+        "card-info": "卡片資訊",
+        "cardnumber": "卡號:",
+        "cardbalance": "餘額:",
         "operation": "操作",
+        "action": "支付",
     },
 };
 
@@ -32,6 +36,9 @@ const languages = {
         "successtext": (totalAmount,newBalance)=> `Deduction ${totalAmount},remaining balance: <span id='remainingBalance'>${newBalance}</span>.`,
         "failure": "Transaction failed",
         "failuretext": "Please try again later.",
+        "selectProduct": "Please select a product first!",
+        "noproduct": "Product does not exist",
+        "del": "Delete",
     },
     zh: {
         "error": "錯誤",
@@ -41,6 +48,9 @@ const languages = {
         "successtext":(totalAmount,newBalance)=> `扣款 ${totalAmount}元，剩餘餘額：<span id='remainingBalance'>${newBalance}</span>。`,
         "failure": "交易失敗",
         "failuretext": "請稍後再試。",
+        "selectProduct": "請先選擇商品！",
+        "noproduct": "商品不存在",
+        "del": "刪除",
     },
 };
 

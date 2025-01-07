@@ -48,9 +48,49 @@
                 if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
                     console.log("Card number:", cardNumber);
                     cardNumberinput.value = ""; // 清空輸入框
-                    handleSubmission(cardNumber);
+                    cardstatus(cardNumber);
                 }
             });
+        });
+
+        async function cardstatus(cardNumber) {
+            const cardRef = ref(database, `rfidCards/${cardNumber}`);
+            const snapshot = await get(cardRef);
+
+            // 檢查卡號是否存在且 status 為 "進場" 或 "Checked in"
+            if (!snapshot.exists() || !(snapshot.val().status === "進場" || snapshot.val().status === "Enter")) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: tip.error,
+                    text: tip.invalidstatus,
+                });
+                return;
+            } else {
+                const cardData = snapshot.val();
+                const balanceInput = document.getElementById("balance");
+                const currentBalance = cardData.balance || 0;
+                balanceInput.value = currentBalance;
+
+                const cardNumberInput = document.getElementById("cardNumber");
+                cardNumberInput.value = cardNumber;
+
+                const cardInfo = document.getElementById("cardInfo");
+                cardInfo.style.display = "block";
+            }
+        }
+
+        // 交易事件
+        window.addEventListener("DOMContentLoaded", () => {
+            const cardNumber = document.getElementById("cardNumber");
+
+            const transactionButton = document.getElementById("transactionButton");
+
+            // 設置按鈕的點擊事件處理函式
+            transactionButton.addEventListener("click", () => {
+                // 取得卡號並執行處理交易的函式
+                handleSubmission(cardNumber.value);
+            });
+
         });
 
         async function handleSubmission(cardNumber) {
@@ -120,6 +160,8 @@
                     text: tip.rechargeSuccessMessage(cardNumber, topUpAmount, newBalance),
                 });
 
+                cardstatus(cardNumber);
+                
                 // 清空儲值金額輸入框
                 document.getElementById("topUpAmount").value = ''; // 清空儲值金額輸入框
 
@@ -144,6 +186,19 @@
         #footer-container {
             margin-top: auto;
         }
+
+        .product-information {
+            flex-direction: row;
+            padding: 10px;
+        }
+
+        .left-container,
+        .right-container {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 10px;
+        }
     </style>
 </head>
 
@@ -152,19 +207,43 @@
 
         <div id="navbar-container"></div>
 
-        <div class="container my-5 form-container">
-            <h2 data-lang="recharge-header">儲值</h2>
-            <form id="top-up-form">
-                <div class="mb-3">
-                    <label for="topUpAmount" class="form-label" data-lang="top-up-amount-label">儲值金額</label>
-                    <input type="number" class="form-control" id="topUpAmount" placeholder="請輸入儲值金額" required>
+        <div class="container my-4 form-container">
+            <div class="product-information container">
+                <div class="row">
+                    <!-- 左邊：儲值表單 -->
+                    <div class="col-md-6 col-12">
+                        <div id="top-up-form" class="left-container rounded">
+                            <div class="mb-3">
+                                <h2 data-lang="recharge-header">儲值</h2>
+                                <label for="cardNumberinput" class="form-label" data-lang="card-number-label">卡號</label>
+                                <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="topUpAmount" class="form-label" data-lang="top-up-amount-label">儲值金額</label>
+                                <input type="number" class="form-control" id="topUpAmount" placeholder="請輸入儲值金額" required>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- 右邊：卡號資訊 -->
+                    <div class="col-md-6 col-12">
+                        <div id="cardInfo" class="card-info right-container rounded">
+                            <h2 data-lang="card-info">卡號資訊</h2>
+                            <div class="mb-3">
+                                <label for="cardNumber" data-lang="cardnumber">卡號:</label>
+                                <input type="text" id="cardNumber" class="form-control" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="balance" data-lang="cardbalance">餘額:</label>
+                                <input type="text" id="balance" class="form-control" disabled>
+                                <div class="text-end mt-3">
+                                    <button class="btn btn-primary" data-lang="action" id="transactionButton">交易</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="mb-3">
-                    <label for="cardNumberinput" class="form-label" data-lang="card-number-label">卡號</label>
-                    <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號" required>
-                </div>
-            </form>
+            </div>            
         </div>
 
         <div id="footer-container"></div>
