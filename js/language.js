@@ -30,7 +30,12 @@ const translations = {
         email: "電子郵件",
         message: "留言",
         submit: "送出",
-        footer: "&copy; 2024 度假村與遊樂園. 版權所有."
+        footer: "&copy; 2024 度假村與遊樂園. 版權所有.",
+        ticket: "門禁驗票",
+        payment: "消費支付",
+        recharge: "儲值",
+        balance: "查詢餘額",
+        transaction: "當日交易紀錄",
     },
     en: {
         pageTitles: {
@@ -63,7 +68,12 @@ const translations = {
         email: "Email",
         message: "Message",
         submit: "Submit",
-        footer: "&copy; 2024 Dream Resort and Park. All rights reserved."
+        footer: "&copy; 2024 Dream Resort and Park. All rights reserved.",
+        ticket: "Ticket Verification",
+        payment: "Payment",
+        recharge: "Recharge",
+        balance: "Check Balance",
+        transaction: "Transaction Record",
     }
 };
 

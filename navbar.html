@@ -10,7 +10,20 @@
                 <li class="nav-item"><a class="nav-link" href="#about" data-lang="about">關於我們</a></li>
                 <li class="nav-item"><a class="nav-link" href="#attractions" data-lang="attractions">景點介紹</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact" data-lang="contact">聯絡我們</a></li>
-                <li class="nav-item"><a class="nav-link" href="menu.html" data-lang="function">功能表</a></li>
+                <!-- <li class="nav-item"><a class="nav-link" href="menu.html" data-lang="function">功能表</a></li> -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="menu.html" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false" data-lang="function">
+                        功能表
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="ticket.html" data-lang="ticket">門禁驗票</a></li>
+                        <li><a class="dropdown-item" href="payment.html" data-lang="payment">消費支付</a></li>
+                        <li><a class="dropdown-item" href="recharge.html" data-lang="recharge">儲值</a></li>
+                        <li><a class="dropdown-item" href="balance.html" data-lang="balance">查詢餘額</a></li>
+                        <li><a class="dropdown-item" href="record.html" data-lang="transaction">當日交易紀錄</a></li>
+                    </ul>
+                </li>
             </ul>
             <div class="ms-3">
                 <button id="btn-zh" class="btn btn-light btn-sm" onclick="setLanguage('zh')">繁體中文</button>
