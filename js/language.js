@@ -35,7 +35,7 @@ const translations = {
         payment: "消費支付",
         recharge: "儲值",
         balance: "查詢餘額",
-        transaction: "當日交易紀錄",
+        transaction: "交易紀錄",
     },
     en: {
         pageTitles: {
@@ -89,8 +89,8 @@ const menu = {
         "recharge-description": "將資金充值到您的帳戶，隨時準備好進行消費或其他服務。",
         balance: "查詢餘額",
         "balance-description": "隨時查詢您的帳戶餘額，確保交易順利無阻。",
-        transaction: "當日交易紀錄",
-        "transaction-description": "查看當日的交易紀錄，了解每筆消費與充值的詳情。",
+        transaction: "交易紀錄",
+        "transaction-description": "查看當日及時的交易紀錄，了解每筆消費與充值的詳情。",
         go: "前往",
     },
     en: {

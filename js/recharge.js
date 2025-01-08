@@ -3,11 +3,17 @@ const recharge = {
         "recharge-header": "Recharge",
         "top-up-amount-label": "Recharge Amount",
         "card-number-label": "Card Number",
+        "card-info": "Card Information",
+        "cardnumber": "Card Number:",
+        "cardbalance": "Card Balance:",
     },
     zh: {
         "recharge-header": "儲值",
         "top-up-amount-label": "儲值金額",
         "card-number-label": "卡號",
+        "card-info": "卡片資訊",
+        "cardnumber": "卡號:",
+        "cardbalance": "餘額:",
     },
 };
 
@@ -19,7 +25,7 @@ const languages = {
         "rechargeSuccess": "Recharge successful",
         "rechargeSuccessMessage": (cardNumber, topUpAmount, newBalance) => `Card number ${cardNumber} has been recharged with ${topUpAmount} dollars, new balance is ${newBalance} dollars.`,
         "rechargeFailure": "Recharge failed",
-        "rechargeFailureMessage": "An error occurred during the recharge process, please try again later."
+        "rechargeFailureMessage": "An error occurred during the recharge process, please try again later.",
     },
     zh: {
         "topUpAmountError": "請輸入正確的儲值金額。",
@@ -28,7 +34,7 @@ const languages = {
         "rechargeSuccess": "儲值成功",
         "rechargeSuccessMessage": (cardNumber, topUpAmount, newBalance) => `卡號 ${cardNumber} 已儲值 ${topUpAmount} 元，餘額 ${newBalance} 元。`,
         "rechargeFailure": "儲值失敗",
-        "rechargeFailureMessage": "儲值過程中發生錯誤，請稍後再試。"
+        "rechargeFailureMessage": "儲值過程中發生錯誤，請稍後再試。",
     }
 };
 

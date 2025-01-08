@@ -75,7 +75,7 @@
                 // 卡號存在，獲取交易紀錄
                 const cardData = snapshot.val();
                 const records = cardData.Record;
-                console.log(records);
+                // console.log(records);
                 if (!records) {
                     // 如果沒有交易紀錄，顯示提示訊息
                     await Swal.fire({
@@ -112,14 +112,14 @@
                         row.innerHTML = `
                     <td>${tip.TransactionRecords}</td>
                     <td>${productDetails}</td>
-                    <td>${new Date(record.date).toLocaleString()}</td>
+                    <td>${formatDate(record.date)}</td>
                 `;
                     } else if (record.type === 'recharge') {
                         // 顯示儲值紀錄
                         row.innerHTML = `
                     <td>${tip.RechargeRecords}</td>
                     <td>${tip.Rechargeamount}${record.amount}</td>
-                    <td>${new Date(record.date).toLocaleString()}</td>
+                    <td>${formatDate(record.date)}</td>
                 `;
                     }
 
@@ -131,6 +131,22 @@
                 console.error("讀取交易紀錄失敗：", error);
                 recordTableBody.innerHTML = ''; // 清空之前的表格內容
             }
+        }
+
+        // 一律使用 24 小時制格式化日期
+        function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false, // 使用 24 小時制
+            };
+
+            const formatter = new Intl.DateTimeFormat('zh-TW', options); // 可將語言設為 'zh-TW' 或 'en-US'
+            return formatter.format(new Date(date));
         }
 
         // 註冊搜尋事件
@@ -205,9 +221,9 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th data-lang="type">類型</th>
-                            <th data-lang="info">資訊</th>
-                            <th data-lang="date">日期<i class="bi bi-sort"></i></th>
+                            <th data-lang="type" style="width: 30%;">類型</th>
+                            <th data-lang="info" style="width: 40%;">資訊</th>
+                            <th data-lang="date" style="width: 30%;">日期<i class="bi bi-sort"></i></th>
                         </tr>
                     </thead>
                     <tbody id="recordTableBody">

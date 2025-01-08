@@ -9,7 +9,7 @@ const record = {
         "date": "Date",
     },
     zh: {
-        "daily-transactions": "當日交易紀錄",
+        "daily-transactions": "交易紀錄",
         "card-number": "卡號",
         "search": "搜尋交易紀錄",
         "type": "類型",
