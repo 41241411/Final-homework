@@ -7,12 +7,16 @@ const translations = {
             payment: "消費支付",
             recharge: "儲值",
             balance: "查詢餘額",
-            record: "當日交易紀錄",
+            record: "交易紀錄",
+            park: "冒險樂園",
+            spa: "SPA中心",
+            food: "美食饗宴",
         },
         home: "度假村與遊樂園",
         about: "關於我們",
         attractions: "景點介紹",
         contact: "聯絡我們",
+        play: "播報頁面文字",
         function: "功能表",
         ticket: "門禁驗票",
         "card-number": "卡號",
@@ -36,6 +40,16 @@ const translations = {
         recharge: "儲值",
         balance: "查詢餘額",
         transaction: "交易紀錄",
+        Park: "冒險樂園",
+        SPA: "SPA中心",
+        food: "美食饗宴",
+        "resort-title": "度假村 - 放鬆的完美場所",
+        "resort-description": "無論您是想放鬆身心還是尋求寧靜的度假體驗，我們的度假村都能滿足您的需求。坐落在大自然的懷抱中，我們的度假村提供舒適的住宿和豐富的娛樂設施，讓您在享受寧靜的環境中體驗無與倫比的放鬆。您可以享受精緻的餐飲、悠閒的散步，或參加各種SPA和娛樂活動，讓身心得到充分的放鬆。",
+        "amusement-title": "遊樂園 - 帶來無限樂趣",
+        "amusement-description": "如果您正在尋找更多刺激，遊樂園是理想的選擇！我們的遊樂園擁有各種各樣的景點，從令人振奮的過山車到適合全家大小的娛樂活動，確保孩子和成人都能享受樂趣。每個角落都充滿歡笑和快樂，是與家人和朋友共度難忘時光的完美場所。",
+        "additional-info-title": "更多資訊",
+        "additional-info-description": "此外，無論是度假村還是遊樂園，我們都提供一流的服務，確保每一刻都充滿驚喜和美好回憶。我們提供各種套餐、住宿選擇和各種折扣，讓您以最優惠的價格享受高級休閒體驗。",
+        "cta-text": "來吧，讓我們一起開始一段美好的假期之旅，體驗大自然與樂趣的完美融合！"
     },
     en: {
         pageTitles: {
@@ -46,11 +60,15 @@ const translations = {
             recharge: "Recharge",
             balance: "Check Balance",
             record: "Transaction Record",
+            park: "Adventure Park",
+            spa: "SPA Center",
+            food: "Gourmet Feast",
         },
         home: "Resorts and Amusement Parks",
         about: "About Us",
         attractions: "Attractions",
         contact: "Contact Us",
+        play: "Broadcast page text",
         function: "menu",
         ticket: "Ticket Verification",
         "card-number": "card number",
@@ -74,6 +92,20 @@ const translations = {
         recharge: "Recharge",
         balance: "Check Balance",
         transaction: "Transaction Record",
+        Park: "Adventure Park",
+        SPA: "SPA Center",
+        food: "Gourmet Feast",
+        "resort-title": "Resort - The Perfect Place to Relax",
+        "resort-description": "Whether you're looking to unwind or seeking a peaceful vacation experience, our resort can meet your needs. Nestled in the embrace of nature, our resort offers comfortable accommodations and a wealth of recreational facilities, allowing you to enjoy a tranquil setting while experiencing unmatched relaxation. You can enjoy exquisite dining, take leisurely walks, or participate in various spa and entertainment activities, allowing your body and mind to fully relax.",
+
+        "amusement-title": "Amusement Park - Bringing Unlimited Fun",
+        "amusement-description": "If you're seeking more thrills, the amusement park is the ideal choice! Our park features a wide range of attractions, from exhilarating roller coasters to family-friendly entertainment, ensuring fun for both children and adults alike. Every corner is filled with laughter and joy, making it the perfect place for unforgettable moments with family and friends.",
+
+        "additional-info-title": "More Information",
+        "additional-info-description": "In addition, both the resort and the amusement park offer top-tier services, ensuring that every moment is filled with surprises and delightful memories. We offer a variety of packages, accommodation options, and various discounts, allowing you to enjoy premium leisure experiences at the best price.",
+
+        "cta-text": "Come, let's begin a wonderful vacation journey together and experience the perfect fusion of nature and fun!"
+
     }
 };
 
@@ -149,7 +181,7 @@ function setLanguage(lang) {
     } else {
         console.log("Language 函數未定義，無法執行");
     }
-    
+
     if (typeof paymentLanguage === 'function') {
         console.log("paymentLanguage 函數已定義，可以執行");
         // 在這裡可以調用 LangpaymentLanguageuage 函數
@@ -157,7 +189,7 @@ function setLanguage(lang) {
     } else {
         console.log("paymentLanguage 函數未定義，無法執行");
     }
-    
+
     if (typeof rechargeLanguage === 'function') {
         console.log("rechargeLanguage 函數已定義，可以執行");
         // 在這裡可以調用 rechargeLanguage 函數
@@ -180,6 +212,30 @@ function setLanguage(lang) {
         recordLanguage(lang);
     } else {
         console.log("recordLanguage 函數未定義，無法執行");
+    }
+    
+    if (typeof parkLanguage === 'function') {
+        console.log("parkLanguage 函數已定義，可以執行");
+        // 在這裡可以調用 parkLanguage 函數
+        parkLanguage(lang);
+    } else {
+        console.log("parkLanguage 函數未定義，無法執行");
+    }
+
+    if (typeof spaLanguage === 'function') {
+        console.log("spaLanguage 函數已定義，可以執行");
+        // 在這裡可以調用 spaLanguage 函數
+        spaLanguage(lang);
+    } else {
+        console.log("spaLanguage 函數未定義，無法執行");
+    }
+
+    if (typeof foodLanguage === 'function') {
+        console.log("foodLanguage 函數已定義，可以執行");
+        // 在這裡可以調用 foodLanguage 函數
+        foodLanguage(lang);
+    } else {
+        console.log("foodLanguage 函數未定義，無法執行");
     }
 
     //更改Menu頁面中帶有 data-lang 的文字

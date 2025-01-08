@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>頂級SPA中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/main.js" defer></script>
+    <script src="js/language.js" defer></script>
+    <script src="js/spa.js" defer></script>
+    <script src="js/play.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #footer-container {
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <!-- Navbar -->
+        <div id="navbar-container"></div>
+
+        <!-- Main Content -->
+        <div class="container my-5 play">
+            <h2 style="display: flex; flex-direction: column; justify-content: center; text-align: center;" data-lang="welcome-title">
+                歡迎來到頂級SPA中心！
+            </h2>
+            <p style="display: flex; flex-direction: column; justify-content: center; text-align: center;" data-lang="welcome-description">
+                在這裡，我們提供極致的放鬆體驗，無論是按摩、泡湯還是其他舒適設施，都能讓您擁有無與倫比的身心放鬆。
+            </p>
+            <div class="d-flex justify-content-center mt-4">
+                <button id="speak-btn" class="btn btn-primary" data-lang="play">播報頁面文字</button>
+            </div>
+            <div class="row mt-4" data-aos="fade-left">
+                <div class="col-md-6 text" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                    <h3 data-lang="relaxation-services">頂級放鬆服務</h3>
+                    <p data-lang="relaxation-description">
+                        我們的SPA中心提供各種放鬆服務，包括深層按摩、芳香療法、身體磨砂等，幫助您釋放壓力，恢復活力。
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://img.freepik.com/premium-photo/towels-with-bamboo-candles-relax-spa-massage-minimal-relaxation-theme_950002-95456.jpg" alt="頂級放鬆服務" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <div class="row mt-4" data-aos="fade-right">
+                <div class="col-md-6">
+                    <img src="https://static.styletc.com/images/cover/79/30879/md-6bcf730c50300c49fb77c9e6fbc0a0e5.jpg" alt="泡湯設施" class="img-fluid rounded">
+                </div>
+                <div class="col-md-6 text" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                    <h3 data-lang="hot-spring-title">泡湯設施</h3>
+                    <p data-lang="hot-spring-description">
+                        我們的溫泉設施提供頂級的放鬆體驗，讓您在寧靜的環境中享受溫暖的水療，促進血液循環並舒緩肌肉緊張。
+                    </p>
+                </div>
+            </div>
+
+            <div class="cta text-center mt-5 text" style="display: flex; flex-direction: column; justify-content: center; text-align: center;" data-aos="fade-up">
+                <p data-lang="call-to-action">立即預約您的放鬆體驗，開始享受身心的完美調養！</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer-container"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+    <script>
+        // 初始化 AOS
+        AOS.init({
+            duration: 1000,  // 動畫持續時間
+            easing: 'ease-in-out',  // 動畫過渡效果
+            once: false  // 設為 true 只執行一次
+        });
+    </script>
+</body>
+
+</html>

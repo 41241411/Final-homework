@@ -368,6 +368,7 @@
                             <h5 data-lang="total-amount">總金額：<span id="totalAmount">0</span> 元</h5>
                         </div>
                     </div>
+                    <div id="svgContainer" style="width: 500px; height: 500px;"></div>
                 </div>
 
                 <!-- 右側區塊 -->
@@ -405,7 +406,17 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <script>
+        const svgContainer = document.getElementById("svgContainer");
+        lottie.loadAnimation({
+            container: svgContainer, // 將動畫放入此容器
+            renderer: 'svg',
+            loop: true,//是否循環
+            autoplay: true,//自動播放
+            path: 'Animation.json' // 指定你的本機 JSON 檔案路徑
+        });
+    </script>
 </body>
 
 </html>

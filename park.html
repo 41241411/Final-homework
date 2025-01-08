@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冒險樂園</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/main.js" defer></script>
+    <script src="js/language.js" defer></script>
+    <script src="js/park.js" defer></script>
+    <script src="js/play.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #footer-container {
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <!-- Navbar -->
+        <div id="navbar-container"></div>
+
+        <!-- Main Content -->
+        <div class="container my-5 play">
+            <h2 style="display: flex; flex-direction: column; justify-content: center; text-align: center;"
+                data-lang="welcome-title">
+                歡迎來到冒險樂園！
+            </h2>
+            <p style="display: flex; flex-direction: column; justify-content: center; text-align: center;"
+                data-lang="welcome-description">
+                這裡是你尋求刺激與冒險的理想場所，擁有眾多設施和遊戲，適合所有年齡層的遊客。不論是你想挑戰刺激的過山車，還是帶著全家來一起享受各種娛樂設施，冒險樂園都能提供無與倫比的樂趣。
+            </p>
+            <div class="d-flex justify-content-center mt-4">
+                <button id="speak-btn" class="btn btn-primary" data-lang="play">播報頁面文字</button>
+            </div>
+            <div class="row mt-4" data-aos="fade-left">
+                <div class="col-md-6 text"
+                    style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                    <h3 data-lang="thrill-rides">驚險刺激的遊樂設施</h3>
+                    <p data-lang="thrill-description">
+                        我們的遊樂園擁有多項極限遊戲，包括過山車、跳樓機等刺激設施，將帶給你前所未有的冒險體驗。
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://cc.tvbs.com.tw/img/program/_data/i/upload/2023/07/27/20230727144453-5134a8df-la.jpg"
+                        alt="冒險樂園" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <div class="row mt-4" data-aos="fade-right">
+                <div class="col-md-6">
+                    <img src="https://hoiana.com/wp-content/uploads/2024/09/%E6%9C%83-%E5%AE%89-%E5%AE%B6-%E5%BA%AD-%E5%BA%A6-%E5%81%87.jpg"
+                        alt="家庭友善設施" class="img-fluid rounded">
+                </div>
+                <div class="col-md-6 text"
+                    style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                    <h3 data-lang="family-friendly">家庭友善設施</h3>
+                    <p data-lang="family-description">
+                        除了刺激的設施，遊樂園還有專為家庭設計的設施，像是親子遊樂區、旋轉木馬等，讓全家都能一起度過愉快的時光。
+                    </p>
+                </div>
+            </div>
+
+            <div class="cta text-center mt-5 text"
+                style="display: flex; flex-direction: column; justify-content: center; text-align: center;"
+                data-aos="fade-up">
+                <p data-lang="call-to-action">趕快來享受無盡的冒險與歡樂吧！</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer-container"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+    <script>
+        // 初始化 AOS
+        AOS.init({
+            duration: 1000,  // 動畫持續時間
+            easing: 'ease-in-out',  // 動畫過渡效果
+            once: false  // 設為 true 只執行一次
+        });
+    </script>
+</body>
+
+
+</html>
