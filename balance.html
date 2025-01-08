@@ -74,9 +74,18 @@
                 const cardData = snapshot.val();
 
                 // 顯示卡號的餘額
-                const balanceInput = document.getElementById("balance");
+                const cardNumberInput = document.getElementById("cardNumber");
+                cardNumberInput.value = cardNumber;
+                const balanceBar = document.getElementById("balance-bar");
+                const balanceText = document.getElementById("balance-text");
                 const currentBalance = cardData.balance || 0;
-                balanceInput.value = currentBalance;
+
+                // 假設餘額最大為100，這裡可以根據實際情況調整最大值
+                const maxBalance = 20000;
+
+                const percentage = (currentBalance / maxBalance) * 100;
+                balanceBar.style.width = `${percentage}%`;  // 更新進度條的長度
+                balanceBar.textContent = `${currentBalance}`;  // 顯示餘額數字
 
             } catch (error) {
                 console.error("檢索卡號資料過程中發生錯誤:", error);
@@ -87,9 +96,8 @@
                 });
             }
         }
-
-
     </script>
+
     <style>
         .page-container {
             display: flex;
@@ -105,7 +113,6 @@
 
 <body>
     <div class="page-container">
-
         <div id="navbar-container"></div>
 
         <div class="container my-5">
@@ -116,17 +123,23 @@
             </div>
 
             <div class="mb-3">
+                <label for="cardNumberinput" class="form-label" data-lang="card-number">卡號</label>
+                <input type="text" class="form-control" id="cardNumber" disabled>
+            </div>
+            <div class="mb-3">
                 <label for="balance" class="form-label" data-lang="balance">餘額</label>
-                <input type="text" class="form-control" id="balance" disabled>
+                <!-- 用進度條代替輸入框 -->
+                <div class="progress" id="balance-progress" role="progressbar" aria-label="Warning example"
+                    aria-valuemin="0" style="height: 30px">
+                    <div class="progress-bar text-bg-warning" id="balance-bar">0</div>
+                </div>
             </div>
         </div>
 
         <div id="footer-container"></div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>
