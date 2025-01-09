@@ -134,7 +134,6 @@
                         // 更新表格中的數量和總價格
                         const row = button.closest("tr");
                         row.querySelector('td:nth-child(2)').innerText = item.quantity; // 更新數量
-                        row.querySelector('td:nth-child(4)').innerText = item.quantity * item.price; // 更新總價
                     } else {
                         // 如果數量是 1，從 cart 中刪除商品並移除表格中的列
                         delete cart[code];
