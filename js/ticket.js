@@ -9,7 +9,7 @@ const languages = {
         balanceText: "1000",
         history: (cardNumber)=>`歷史紀錄:${cardNumber}`,
         enter: "入場",
-        exit: "出場",
+        exit: "退場",
         
     },
     'en': {
