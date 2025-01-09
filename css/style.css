@@ -1,15 +1,18 @@
 .footer,
 .navbar {
-    background-color: #66c2a5 !important;
+    background-color: #8dd3c7 !important;
 }
 .btn {
-    background-color: #66c2a5 !important; /* 背景顏色 */
+    background-color: #8dd3c7 !important; /* 背景顏色 */
     color: #ffffff; /* 文字顏色 */
 }
 .text {
     color: white;
     text-align: center;
-    background-color: #8da0cb; /* Optional: for better readability */
+    background-color: #bebada; /* Optional: for better readability */
     padding: 20px;
     border-radius: 10px;
+}
+body {
+    background-color: #ffffdd;
 }

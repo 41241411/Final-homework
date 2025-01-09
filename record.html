@@ -100,7 +100,7 @@
                         let productDetails = '';
                         if (Array.isArray(record.products)) {
                             record.products.forEach(product => {
-                                productDetails += `${product.productName} (x${product.quantity}) - ${product.amount}元<br>`;
+                                productDetails += `${product.productName} (x${product.quantity}) - ${product.amount}<br>`;
                             });
                         } else {
                             console.warn("交易紀錄中 products 欄位不存在或不是陣列：", record.products);
@@ -118,7 +118,7 @@
                         // 顯示儲值紀錄
                         row.innerHTML = `
                     <td>${tip.RechargeRecords}</td>
-                    <td>${tip.Rechargeamount}${record.amount}</td>
+                    <td>${tip.Rechargeamount} ${record.amount}</td>
                     <td>${formatDate(record.date)}</td>
                 `;
                     }
@@ -204,35 +204,36 @@
 
         <div id="navbar-container"></div>
 
-        <div class="container my-5">
-            <h1 data-lang="daily-transactions">當日交易紀錄</h1>
-            <div class="mb-3">
-                <label for="cardNumberinput" class="form-label" data-lang="card-number">卡號</label>
-                <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號">
-            </div>
+        <div class="container my-5 border rounded-3 bg-light">
+            <div class="my-3">
+                <h1 data-lang="daily-transactions">當日交易紀錄</h1>
+                <div class="mb-3">
+                    <label for="cardNumberinput" class="form-label" data-lang="card-number">卡號</label>
+                    <input type="text" class="form-control" id="cardNumberinput" placeholder="請輸入8位數卡號">
+                </div>
 
-            <!-- 單一搜尋欄位 -->
-            <div class="mb-3">
-                <label for="search" class="form-label" data-lang="search">搜尋交易紀錄</label>
-                <input type="text" class="form-control" id="search" placeholder="搜尋類型、資訊或日期">
-            </div>
+                <!-- 單一搜尋欄位 -->
+                <div class="mb-3">
+                    <label for="search" class="form-label" data-lang="search">搜尋交易紀錄</label>
+                    <input type="text" class="form-control" id="search" placeholder="搜尋類型、資訊或日期">
+                </div>
 
-            <div class="record-list mb-3" id="recordList">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th data-lang="type" style="width: 30%;">類型</th>
-                            <th data-lang="info" style="width: 40%;">資訊</th>
-                            <th data-lang="date" style="width: 30%;">日期<i class="bi bi-sort"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody id="recordTableBody">
-                        <!-- 這裡是商品資料動態顯示的位置 -->
-                    </tbody>
-                </table>
+                <div class="record-list mb-3" id="recordList">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-lang="type" style="width: 30%;">類型</th>
+                                <th data-lang="info" style="width: 40%;">資訊</th>
+                                <th data-lang="date" style="width: 30%;">日期<i class="bi bi-sort"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordTableBody">
+                            <!-- 這裡是商品資料動態顯示的位置 -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
 
         <div id="footer-container"></div>
 
