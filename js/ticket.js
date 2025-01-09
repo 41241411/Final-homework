@@ -6,7 +6,11 @@ const languages = {
         errorTitle: "錯誤",
         errorText: "儲存資料時發生錯誤，請稍後再試。",
         statusText: "入場",
-        balanceText: "1000"
+        balanceText: "1000",
+        history: (cardNumber)=>`歷史紀錄:${cardNumber}`,
+        enter: "入場",
+        exit: "出場",
+        
     },
     'en': {
         invalidInput: "Please enter a valid card number",
@@ -14,7 +18,10 @@ const languages = {
         errorTitle: "Error",
         errorText: "An error occurred while saving data. Please try again later.",
         statusText: "Enter",
-        balanceText: "1000"
+        balanceText: "1000",
+        history: (cardNumber)=>`History:${cardNumber}`,
+        enter: "Enter",
+        exit: "Exit",
     },
 };
 

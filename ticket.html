@@ -22,7 +22,9 @@
             update,
             ref,
             set,
+            push,
         } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+        const isHistoryDisplayed = false;  // 防止 displayHistory 重複執行
 
         const firebaseConfig = {
             apiKey: "AIzaSyA70-rQBBmkKm3qGVx8auaNfv9l-usK91w",
@@ -47,7 +49,13 @@
                 const cardNumber = rfidInput.value.trim();
 
                 if (/^\d{8}$/.test(cardNumber)) { // 驗證是否為 8 位數字
-                    handleSubmission(cardNumber);
+                    // 延遲顯示歷史紀錄，避免重複
+                    setTimeout(() => {
+                        if (!isHistoryDisplayed) {
+                            handleSubmission(cardNumber);
+                            const isHistoryDisplayed = true;   // 設置為已顯示
+                        }
+                    }, 500);  // 延遲 500ms
                 }
             });
         });
@@ -71,6 +79,7 @@
                         const currentStatus = snapshot.val().status;
                         const currentBalance = snapshot.val().balance || 100;  // 若資料庫沒有 balance，使用預設值 100
                         console.log("Updated 22:", currentStatus);  // 輸出更新後的狀態
+                        const timestamp = new Date().toISOString(); // 獲取 ISO 時間格式
 
                         // 根據當前的 status 設定 newStatus
                         const newStatus = (() => {
@@ -108,10 +117,16 @@
                             balance: currentBalance // 保持原來的餘額
                         })
                             .then(() => {
+                                push(ref(database, `rfidCards/${cardNumber}/history`), {
+                                    status: newStatus,
+                                    timestamp: timestamp,
+                                });
                                 Swal.fire({
                                     icon: "success",
                                     title: tip.successTitle(cardNumber, newStatus),
                                 });
+                                displayHistory(cardNumber);
+
                                 rfidInput.value = ""; // 清空輸入框
                             })
                             .catch((error) => {
@@ -121,18 +136,28 @@
                                     title: tip.errorTitle,
                                 });
                             });
+
                     } else {
+                        const timestamp = new Date().toISOString(); // 獲取 ISO 時間格式
+
                         // 資料不存在，第一次輸入，設為進場或 Enter，並且預設餘額為 100
                         const initialStatus = (lang === 'zh' ? "進場" : "Enter");
+                        // 新增歷史紀錄
+
                         set(ref(database, `rfidCards/${cardNumber}`), {
                             status: initialStatus,  // 根據語言設置預設狀態
                             balance: 100 // 預設餘額
                         })
                             .then(() => {
+                                push(ref(database, `rfidCards/${cardNumber}/history`), {
+                                    status: initialStatus,
+                                    timestamp: timestamp,
+                                });
                                 Swal.fire({
                                     icon: "success",
                                     title: tip.successTitle(cardNumber, initialStatus),
                                 });
+                                displayHistory(cardNumber);  // 顯示歷史紀錄
                                 rfidInput.value = ""; // 清空輸入框
                             })
                             .catch((error) => {
@@ -151,8 +176,63 @@
                         title: tip.errorTitle,
                     });
                 });
+            const isHistoryDisplayed = false;
+            console.log("Updated 44:", isHistoryDisplayed);  // 輸出更新後的狀態
         };
 
+        function updateHistoryTitle(cardNumber) {
+            const historyTitle = document.getElementById("historyTitle");
+            historyTitle.textContent = tip.history(cardNumber);
+        }
+
+        function displayHistory(cardNumber) {
+            updateHistoryTitle(cardNumber); // 更新標題
+
+            get(ref(database, `rfidCards/${cardNumber}/history`))
+                .then(snapshot => {
+                    historyList.innerHTML = ""; // 清空歷史紀錄
+                    if (snapshot.exists()) {
+                        const records = snapshot.val();
+                        for (const recordKey in records) {
+                            const record = records[recordKey];
+                            const li = document.createElement("li");
+                            li.classList.add("list-group-item");
+
+                            // 將 ISO 時間格式轉換為 24 小時制的格式
+                            const timestamp = new Date(record.timestamp);
+                            const formattedTime = formatTimestamp(timestamp);
+
+                            // 根據 lang 判斷 status 顯示內容
+                            let statusText;
+                            if (record.status === "進場" || record.status === "Enter") {
+                                li.textContent = `${formattedTime} - ${tip.enter}`;
+
+                            } else if (record.status === "退場" || record.status === "Exit") {
+                                li.textContent = `${formattedTime} - ${tip.exit}`;
+                            }
+
+                            historyList.appendChild(li);
+                        }
+                    } else {
+                        historyList.innerHTML = `<li class="list-group-item">無歷史記錄</li>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("無法顯示歷史記錄：", error);
+                });
+        }
+
+        // 格式化時間為 'YYYY/MM/DD HH:mm:ss' 格式
+        function formatTimestamp(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始，所以加 1
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+
+            return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        }
 
     </script>
 
@@ -182,6 +262,10 @@
                         <label for="rfidInput" class="form-label" data-lang="card-number">卡號</label>
                         <input type="text" id="rfidInput" placeholder="請輸入8位數卡號" class="form-control" required>
                     </div>
+                </div>
+                <div id="historyListContainer" class="mt-4">
+                    <h4 id="historyTitle" data-lang="history">歷史記錄</h4>
+                    <ul id="historyList" class="list-group"></ul>
                 </div>
             </div>
         </div>
